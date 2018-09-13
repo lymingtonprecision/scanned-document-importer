@@ -1,0 +1,13 @@
+defaults: &defaults
+  username: docimport
+  password: password
+
+development: &development
+  <<: *defaults
+  instance: //db-test-server/TESTDBSID
+  scanbasedir: //development/document/location
+
+production:
+  <<: *defaults
+  instance: //db-test-server/PRODDBSID
+  scanbasedir: //production/document/location
