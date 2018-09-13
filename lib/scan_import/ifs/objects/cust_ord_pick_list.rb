@@ -67,14 +67,6 @@ module IFS
     def to_s
       "Del Note #{pick_list[/\d+$/]}"
     end
-
-    def self.obj_ref(keys)
-      "Customer Order #{keys["ORDER_NO"]}, Line #{keys["LINE_NO"]}, Release #{keys["REL_NO"]}"
-    end
-
-    def self.obj_url(keys)
-      "#{BASE_URL}ifsapf%3AtbwOverviewCustOrdLine%3Faction%3Dget%26key1%3D#{keys["LINE_ITEM_NO"]}%255E#{keys["LINE_NO"]}%255E#{keys["ORDER_NO"]}%255E#{keys["REL_NO"]}%26COMPANY%3DLPE"
-    end
   end
 
   class CustOrdPickList < CustOrdDelNote
@@ -118,4 +110,3 @@ module IFS
     end
   end
 end
-

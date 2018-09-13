@@ -1,7 +1,5 @@
 module IFS
   class Object
-    BASE_URL = "http://xenon.lymingtonprecision.co.uk:60080/client/runtime/Ifs.Fnd.Explorer.application?url=" unless const_defined?("BASE_URL")
-
     class << self
       def find
         nil
@@ -181,21 +179,8 @@ module IFS
       []
     end
 
-    def key_hash
-      keys.inject({}) {|h,k| h.merge k}
-    end
-
-    def obj_ref
-      self.class.obj_ref key_hash
-    end
-
-    def obj_url
-      self.class.obj_url key_hash
-    end
-
     def to_s
       key_value.gsub(/\^/, "-")
     end
   end
 end
-

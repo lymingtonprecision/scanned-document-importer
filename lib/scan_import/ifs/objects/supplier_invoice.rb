@@ -52,14 +52,5 @@ module IFS
     def to_s
       "Supplier Invoice #{payment_reference}"
     end
-
-    def self.obj_ref(keys)
-      "Supplier Invoice ID #{keys["INVOICE_ID"]}"
-    end
-
-    def self.obj_url(keys)
-      "#{BASE_URL}ifsapf%3AfrmManualSupplierInvoice%3Faction%3Dget%26key1%3D#{keys["COMPANY"]}%255E#{keys["INVOICE_ID"]}%26COMPANY%3DLPE"
-    end
   end
 end
-

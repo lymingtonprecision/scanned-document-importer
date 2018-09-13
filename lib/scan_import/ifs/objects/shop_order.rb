@@ -67,14 +67,5 @@ module IFS
     def to_s
       "Shop Order #{order}"
     end
-
-    def self.obj_ref(keys)
-      "Order #{keys["ORDER_NO"]}, Release #{keys["RELEASE_NO"]}, Sequence #{keys["SEQUENCE_NO"]}"
-    end
-
-    def self.obj_url(keys)
-      "#{BASE_URL}ifsapf%3AfrmShopOrd%3Faction%3Dget%26key1%3D#{keys["ORDER_NO"]}%255E#{keys["RELEASE_NO"]}%255E#{keys["SEQUENCE_NO"]}%26COMPANY%3DLPE"
-    end
   end
 end
-

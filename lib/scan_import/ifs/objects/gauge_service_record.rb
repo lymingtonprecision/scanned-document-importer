@@ -44,14 +44,5 @@ module IFS
     def to_s
       "#{object_id} Archive"
     end
-
-    def self.obj_ref(keys)
-      keys["MCH_CODE"]
-    end
-
-    def self.obj_url(keys)
-      "#{BASE_URL}ifsapf%3AfrmSerialObject%3Faction%3Dget%26key1%3DLPE%255E#{keys["MCH_CODE"]}%26COMPANY%3DLPE"
-    end
   end
 end
-

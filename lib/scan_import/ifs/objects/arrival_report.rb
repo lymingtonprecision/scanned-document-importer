@@ -56,14 +56,5 @@ module IFS
     def to_s
       "ARN #{[order, line, release, receipt].join("-")}"
     end
-
-    def self.obj_ref(keys)
-      "Order #{keys["ORDER_NO"]}, Line #{keys["LINE_NO"]}, Release #{keys["RELEASE_NO"]}, Receipt #{keys["RECEIPT_NO"]}"
-    end
-
-    def self.obj_url(keys)
-      "#{BASE_URL}ifsapf%3AfrmPurchaseReceipt%3Faction%3Dget%26key1%3D#{keys["LINE_NO"]}%255E#{keys["ORDER_NO"]}%255E#{keys["RECEIPT_NO"]}%255E#{keys["RELEASE_NO"]}%26COMPANY%3DLPE"
-    end
   end
 end
-
