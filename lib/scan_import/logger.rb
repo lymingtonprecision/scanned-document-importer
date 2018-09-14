@@ -39,7 +39,7 @@ class IFS::Logger < Logger
     super(path, 'daily')
     self.datetime_format = '%Y-%m-%d %H:%M:%S'
     self.formatter = proc do |severity, datetime, progname, msg|
-      "[#{datetime}] #{severity}: #{msg}"
+      "[#{datetime}] #{severity}: #{msg}\n"
     end
   end
 
