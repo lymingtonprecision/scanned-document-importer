@@ -1,3 +1,4 @@
+require 'securerandom'
 require File.join(File.dirname(__FILE__), "..", "ifs")
 
 module IFS
@@ -5,7 +6,7 @@ module IFS
     class << self
       def perform(*obj_classes)
         log = IFS::Object.logger
-        run_id = nil
+        run_id = SecureRandom.uuid
         docs = 0
 
         IFS.connect do
@@ -15,7 +16,7 @@ module IFS
               IFS::Object.set_logger log
             end
 
-            run_id = log.start
+            log.start run_id
 
             obj_classes.each do |obj_class|
               if IFS.const_defined? obj_class

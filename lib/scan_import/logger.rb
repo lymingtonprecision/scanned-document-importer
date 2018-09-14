@@ -1,5 +1,3 @@
-require 'securerandom'
-
 module IFS; end
 
 class IFS::Logger
@@ -15,12 +13,7 @@ class IFS::Logger
   # Logging methods
   #
   def start
-    @run_id = SecureRandom.uuid
     # TODO write a 'started' entry to the log?
-  end
-
-  def last_run_id
-    @run_id
   end
 
   def error_to_s(error)
@@ -37,17 +30,14 @@ class IFS::Logger
   end
 
   def error(run_id, error)
-    run_id ||= last_run_id
     # TODO write the error to the log?
   end
 
-  def finish(run_id=last_run_id)
-    @run_id = nil
+  def finish(run_id)
     # TODO write a 'finished' entry to the log?
   end
 
   def doc_class(run_id, doc_class, dir)
-    run_id ||= last_run_id
     # TODO write a 'processing <doc_class>' entry to the log
   end
 
@@ -61,7 +51,6 @@ class IFS::Logger
     obj_key=nil,
     error=nil
   )
-    run_id ||= last_run_id
     # TODO write a 'processed <file details>' entry to the log
   end
 end
