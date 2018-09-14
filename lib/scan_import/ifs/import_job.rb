@@ -4,11 +4,7 @@ module IFS
   class ImportJob
     class << self
       def run_job(dry_run=false, &block)
-        if dry_run
-          block.call()
-        else
-          IFS.connect(&block)
-        end
+        IFS.connect(&block)
       end
 
       def perform(dry_run=false, *obj_classes)
@@ -47,7 +43,7 @@ module IFS
 
             log.info { "all document types processed, #{docs} documents imported" }
 
-            IFS.rollback if !dry_run && docs == 0
+            IFS.rollback if dry_run || docs == 0
           rescue
             log.fatal $!
           ensure
