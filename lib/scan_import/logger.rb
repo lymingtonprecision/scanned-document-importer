@@ -36,7 +36,13 @@ class IFS::Logger < Logger
 
   def initialize(path)
     @path = path
+
+    if path.instance_of?(String) && !Dir.exists?(File.dirname(path))
+      Dir.mkdir(File.dirname(path))
+    end
+
     super(path, 'daily')
+
     self.formatter = proc do |severity, datetime, progname, msg|
       ts = datetime.strftime('%Y-%m-%d %H:%M:%S')
       "[#{ts}] #{severity}: #{msg}\n"
