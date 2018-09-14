@@ -38,6 +38,6 @@ class IFS::Logger < Logger
 
   def close
     super()
-    self.class.cleanup_aged_log_files!(@path)
+    self.class.cleanup_aged_log_files!(@path) if @path.instance_of?(String)
   end
 end
