@@ -17,12 +17,15 @@ class IFS::Logger < Logger
       ctime < cutoff
     end
 
-    def cleanup_aged_log_files!(path)
+    def cleanup_aged_log_files!(log, path)
       basedir = File.dirname(path)
       cutoff = last_rentention_time()
 
       Dir.glob(File.join(basedir, "*.log.txt.*")) do |fname|
-        File.delete(fname) if file_execeeds_log_retention_time(cutoff, fname)
+        if file_execeeds_log_retention_time(cutoff, fname)
+          log.info { "Removing old log file #{fname}" }
+          File.delete(fname)
+        end
       end
     end
 
@@ -37,7 +40,7 @@ class IFS::Logger < Logger
   end
 
   def close
+    self.class.cleanup_aged_log_files!(self, @path) if @path.instance_of?(String)
     super()
-    self.class.cleanup_aged_log_files!(@path) if @path.instance_of?(String)
   end
 end
