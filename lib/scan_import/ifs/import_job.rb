@@ -22,6 +22,10 @@ module IFS
 
         log.info { "starting import of #{obj_classes}" }
 
+        if dry_run
+          log.info { "Performing a DRY RUN - no files will be changed or records created"}
+        end
+
         run_job(dry_run) do
           log.info { "connected to #{IFS.default_credentials[:instance]}" }
 
