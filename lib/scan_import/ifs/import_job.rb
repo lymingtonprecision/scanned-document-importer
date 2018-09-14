@@ -1,42 +1,53 @@
-require 'securerandom'
 require File.join(File.dirname(__FILE__), "..", "ifs")
 
 module IFS
   class ImportJob
     class << self
-      def perform(*obj_classes)
-        log = IFS::Object.logger
-        run_id = SecureRandom.uuid
+      def run_job(dry_run=false, &block)
+        if dry_run
+          block.call()
+        else
+          IFS.connect(&block)
+        end
+      end
+
+      def perform(dry_run=false, *obj_classes)
+        log_file = if dry_run
+                     STDOUT
+                   else
+                     IFS::Logger.file_path(IFS.config["scanbasedir"])
+                   end
+        log = IFS::Logger.new(log_file)
         docs = 0
 
-        IFS.connect do
+        log.info { "starting import of #{obj_classes}" }
+
+        run_job(dry_run) do
+          log.info { "connected to #{IFS.default_credentials[:instance]}" }
+
           begin
-            if log.nil?
-              log = IFS::Logger.new
-              IFS::Object.set_logger log
-            end
-
-            log.start run_id
-
             obj_classes.each do |obj_class|
+              klass_docs = 0
+
               if IFS.const_defined? obj_class
+                log.info { "starting import of #{obj_class}"}
                 klass = IFS.const_get(obj_class)
-                docs += klass.process_new_documents(run_id)
+                klass_docs = klass.process_new_documents(dry_run)
+                log.info { "finished import of #{obj_class} (#{klass_docs} documents imported)"}
+              else
+                log.error { "don't know how to import '#{obj_class}' documents"}
               end
+
+              docs += klass_docs
             end
 
-            if docs == 0
-              IFS.rollback
-              run_id = nil
-            end
+            log.info { "all document types processed, #{docs} documents imported" }
+
+            IFS.rollback if !dry_run && docs == 0
           rescue
-            if run_id.nil?
-              raise $!
-            else
-              log.error run_id, $!
-            end
+            log.fatal $!
           ensure
-            log.finish(run_id) unless run_id.nil?
+            log.close
           end
         end
       end

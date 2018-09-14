@@ -45,8 +45,6 @@ module IFS
       @no = no
       @contents = contents
       @location = "IFS_DB"
-
-      save! unless exists?
     end
 
     def exists?

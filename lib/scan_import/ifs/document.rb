@@ -13,8 +13,10 @@ module IFS
       @rev = rev
       @files = []
       @objects = []
+    end
 
-      save! if no.nil?
+    def to_s
+      "{class: #{doc_class}, title: #{title}, number: #{no}, sheet: #{sheet}, rev: #{rev}}"
     end
 
     def save!

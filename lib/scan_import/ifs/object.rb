@@ -77,32 +77,31 @@ module IFS
         @attached_dir ||= File.join(scanning_dir, "attached")
       end
 
-      def set_logger(log)
-        @logger = log
-      end
-
-      def logger
-        @logger.nil? ? parent_class_value(:logger) : @logger
-      end
-
-      def log(meth, *args)
-        return if logger.nil?
-        logger.send(meth, *args)
-      end
-
-      def process_new_documents(log_id=nil)
-        log :doc_class, log_id, class_name, scanning_dir
+      def process_new_documents(dry_run=false)
         doc_count = 0
+
+        log_file = if dry_run
+                     STDOUT
+                   else
+                     IFS::Logger.file_path(scanning_dir)
+                   end
+        log = IFS::Logger.new(log_file)
+
+        log.info { "checking #{scanning_dir} for files to import"}
+
         find_new_files do |f|
+          log.info { "found #{f.path}, processing" }
+
           begin
             obj = find(*f.name.split("-"))
           rescue
-            log :doc_file, log_id, class_name, f.path, doc_class, nil, nil, nil, $!
+            log.error { "error looking up associated object" }
+            log.error { $! }
             next
           end
 
           if obj.nil?
-            log :doc_file, log_id, class_name, f.path, doc_class, nil, nil, nil, "can't find associated object (#{f.name})"
+            log.warn { "skipping file, #{f.name}, no associated object found" }
           else
             objs = [obj].flatten
 
@@ -110,47 +109,56 @@ module IFS
             err = nil
 
             begin
-              doc = IFS::Document.new(objs[0].doc_class, objs[0].to_s)
+              begin
+                doc = IFS::Document.new(objs[0].doc_class, objs[0].to_s)
+                doc.save! unless dry_run
+                log.info { "created document #{doc.to_s}" }
+              rescue
+                log.error { "failed to create document #{doc.to_s}"}
+                throw $!
+              end
 
               %w{ORIGINAL VIEW}.each do |dt|
-                doc.files << IFS::EdmFile.new(
-                  doc, dt, objs[0].to_s, f.type, f.to_blob
-                )
+                begin
+                  edm_file = IFS::EdmFile.new(
+                    doc, dt, objs[0].to_s, f.type, f.to_blob
+                  )
+                  edm_file.save! unless dry_run
+                  doc.files << edm_file
+                  log.info { "uploaded scan as #{dt} file of document #{doc.to_s}" }
+                rescue
+                  log.error { "failed to create #{dt} file for document #{doc.to_s}" }
+                  throw $!
+                end
               end
+
+              log.info { "connecting document to associated objects" }
 
               objs.each do |obj|
-                doc.connect_to(obj)
-
-                log(
-                  :doc_file,
-                  log_id,
-                  class_name,
-                  f.path,
-                  doc_class,
-                  doc.nil? ? nil : doc.no,
-                  obj.lu_name,
-                  obj.key_ref,
-                  err
-                )
+                begin
+                  doc.connect_to(obj) unless dry_run
+                  log.info { "connected #{obj.to_s} to document #{doc.to_s}" }
+                rescue
+                  log.error { "failed to connect #{obj.to_s} to document #{doc.to_s}" }
+                  throw $!
+                end
               end
 
-              f.move_to objs[0].class.attached_dir
-              M.database.commit
+              log.info { "finished processing #{f.path}" }
+
+              begin
+                d = objs[0].class.attached_dir
+                f.move_to(d) unless dry_run
+                log.info { "moved #{f.path} to #{d}" }
+              rescue
+                log.error { "failed to archive file - #{f.path} - after processing" }
+                throw $!
+              end
+
+              M.database.commit unless dry_run
               doc_count += 1
             rescue
-              err = $!
-
-              log(
-                :doc_file,
-                log_id,
-                class_name,
-                f.path,
-                doc_class,
-                doc.nil? ? nil : doc.no,
-                objs[0].lu_name,
-                objs[0].key_ref,
-                err
-              )
+              log.error { $!}
             end
           end
         end
