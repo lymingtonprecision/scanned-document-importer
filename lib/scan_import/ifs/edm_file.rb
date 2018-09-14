@@ -25,7 +25,7 @@ module IFS
         find.bind_param(':doc_sheet', doc.sheet.to_s, String, 10)
         find.bind_param(':doc_rev', doc.rev, String, 6)
         find.bind_param(':doc_type', doc_type, String, 12)
-        find.bind_param(':file_no', file_no, Fixnum)
+        find.bind_param(':file_no', file_no, Integer)
 
         find.exec
 
@@ -108,7 +108,7 @@ module IFS
         save.bind_param(':doc_sheet', document.sheet.to_s, String, 10)
         save.bind_param(':doc_rev', document.rev, String, 6)
         save.bind_param(':doc_type', doc_type, String, 12)
-        save.bind_param(':file_no', no, Fixnum)
+        save.bind_param(':file_no', no, Integer)
         save.bind_param(':file_name', name, String, 254)
         save.bind_param(':file_type', type, String, 30)
         save.bind_param(':file_loc', location, String, 254)

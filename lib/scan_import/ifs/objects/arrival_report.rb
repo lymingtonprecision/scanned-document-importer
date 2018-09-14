@@ -24,7 +24,7 @@ module IFS
       find.bind_param(':order_no', order, String, 12)
       find.bind_param(':line_no', line, String, 4)
       find.bind_param(':release_no', release, String, 4)
-      find.bind_param(':receipt_no', receipt, Fixnum)
+      find.bind_param(':receipt_no', receipt, Integer)
 
       find.exec
       result = (find.fetch || [])[0] || 0
