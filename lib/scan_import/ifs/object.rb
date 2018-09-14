@@ -77,7 +77,7 @@ module IFS
         @attached_dir ||= File.join(scanning_dir, "attached")
       end
 
-      def process_new_documents(dry_run=false)
+      def process_new_documents(dry_run=false, base_log)
         doc_count = 0
 
         log_file = if dry_run
@@ -85,7 +85,7 @@ module IFS
                    else
                      IFS::Logger.file_path(scanning_dir)
                    end
-        log = IFS::Logger.new(log_file)
+        log = IFS::Logger.new(log_file, base_log)
 
         log.info { "checking #{scanning_dir} for files to import"}
 

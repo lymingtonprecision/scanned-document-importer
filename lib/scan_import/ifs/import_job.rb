@@ -32,7 +32,7 @@ module IFS
               if IFS.const_defined? obj_class
                 log.info { "starting import of #{obj_class}"}
                 klass = IFS.const_get(obj_class)
-                klass_docs = klass.process_new_documents(dry_run)
+                klass_docs = klass.process_new_documents(dry_run, log)
                 log.info { "finished import of #{obj_class} (#{klass_docs} documents imported)"}
               else
                 log.error { "don't know how to import '#{obj_class}' documents"}

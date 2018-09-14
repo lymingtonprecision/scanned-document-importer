@@ -34,8 +34,9 @@ class IFS::Logger < Logger
     end
   end
 
-  def initialize(path)
+  def initialize(path, base_log=nil)
     @path = path
+    @base_log = base_log
 
     if path.instance_of?(String) && !Dir.exists?(File.dirname(path))
       Dir.mkdir(File.dirname(path))
@@ -47,6 +48,16 @@ class IFS::Logger < Logger
       ts = datetime.strftime('%Y-%m-%d %H:%M:%S')
       "[#{ts}] #{severity}: #{msg}\n"
     end
+  end
+
+  def add(*args)
+    @base_log.add(*args) if @base_log
+    super
+  end
+
+  def <<(msg)
+    @base_log << msg if @base_log
+    super
   end
 
   def close
