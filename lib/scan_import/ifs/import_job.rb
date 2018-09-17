@@ -7,7 +7,7 @@ module IFS
         IFS.connect(&block)
       end
 
-      def perform(dry_run=false, *obj_classes)
+      def perform(*obj_classes, dry_run: false)
         log_file = if dry_run
                      STDOUT
                    else
