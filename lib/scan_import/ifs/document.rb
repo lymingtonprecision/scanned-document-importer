@@ -2,7 +2,6 @@ module IFS
   class Document
     attr_reader :doc_class, :no, :title
     attr_reader :sheet, :rev
-    attr_reader :files
     attr_reader :objects
 
     def initialize(doc_class, title, no=nil, sheet=1, rev="A1")
@@ -11,7 +10,6 @@ module IFS
       @no = no
       @sheet = sheet
       @rev = rev
-      @files = []
       @objects = []
     end
 

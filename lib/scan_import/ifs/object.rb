@@ -128,7 +128,6 @@ module IFS
                     doc, dt, objs[0].to_s, f.type, f.to_blob
                   )
                   edm_file.save! unless dry_run
-                  doc.files << edm_file
                   log.info { "uploaded scan as #{dt} file of document #{doc.to_s}" }
                 rescue
                   log.error { "failed to create #{dt} file for document #{doc.to_s}" }
