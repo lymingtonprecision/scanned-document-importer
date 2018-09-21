@@ -30,6 +30,8 @@ module IFS
         15
       )
 
+      find_co_lines.define(4, Integer)
+
       find_co_lines.exec
 
       while r = find_co_lines.fetch
@@ -89,6 +91,8 @@ module IFS
       )
 
       find_co_lines.bind_param(':pick_list', pick_list_no, String, 15)
+
+      find_co_lines.define(4, Integer)
 
       find_co_lines.exec
 

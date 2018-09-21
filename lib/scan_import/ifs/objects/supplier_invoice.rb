@@ -25,6 +25,8 @@ module IFS
 
       find.bind_param(':payment_ref', payment_reference, String, 50)
 
+      find.define(2, Integer)
+
       find.exec
       result = find.fetch
       find.close
