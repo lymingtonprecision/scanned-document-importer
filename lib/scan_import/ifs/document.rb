@@ -2,7 +2,6 @@ module IFS
   class Document
     attr_reader :doc_class, :no, :title
     attr_reader :sheet, :rev
-    attr_reader :objects
 
     def initialize(doc_class, title, no=nil, sheet=1, rev="A1")
       @doc_class = doc_class
@@ -10,7 +9,6 @@ module IFS
       @no = no
       @sheet = sheet
       @rev = rev
-      @objects = []
     end
 
     def to_s
@@ -54,16 +52,17 @@ module IFS
         save.close
       end
     end
-
-    def connect_to(obj)
-      Connection.create(self, obj)
-      objects << obj
-      return self
-    end
   end
 
   class Document::Connection
-    def self.create(doc, obj)
+    attr_reader :document, :object
+
+    def initialize(doc, obj)
+      @document = doc
+      @object = obj
+    end
+
+    def save!
       connect = M.database.parse(<<-SQL
         declare
           info_ varchar2(32000);
@@ -91,17 +90,29 @@ module IFS
       )
 
       begin
-        connect.bind_param(':lu_name', obj.class.lu_name, String, 30)
-        connect.bind_param(':key_ref', obj.key_ref, String, 500)
-        connect.bind_param(':doc_class', doc.doc_class, String, 12)
-        connect.bind_param(':doc_no', doc.no, String, 120)
-        connect.bind_param(':doc_sheet', doc.sheet.to_s, String, 10)
-        connect.bind_param(':doc_rev', doc.rev, String, 6)
+        connect.bind_param(':lu_name', object.class.lu_name, String, 30)
+        connect.bind_param(':key_ref', object.key_ref, String, 500)
+        connect.bind_param(':doc_class', document.doc_class, String, 12)
+        connect.bind_param(':doc_no', document.no, String, 120)
+        connect.bind_param(':doc_sheet', document.sheet.to_s, String, 10)
+        connect.bind_param(':doc_rev', document.rev, String, 6)
 
         connect.exec
       ensure
         connect.close
       end
+    end
+
+    def to_s
+      "{" + \
+      ["lu_name: '#{object.class.lu_name}'",
+       "doc_class: '#{document.doc_class}'",
+       "doc_no: '#{document.no}'",
+       "doc_sheet: '#{document.sheet.to_s}'",
+       "doc_rev: '#{document.rev}'",
+       "key_ref: '#{object.key_ref}'"
+      ].join(", ") + \
+      "}"
     end
   end
 end

@@ -139,8 +139,9 @@ module IFS
 
               objs.each do |obj|
                 begin
-                  doc.connect_to(obj) unless dry_run
-                  log.info { "connected #{obj.to_s} to document #{doc.to_s}" }
+                  connection = IFS::Document::Connection.new(doc, obj)
+                  connection.save! unless dry_run
+                  log.info { "connected #{obj.to_s} to document #{doc.to_s} (#{connection.to_s})" }
                 rescue
                   log.error { "failed to connect #{obj.to_s} to document #{doc.to_s}" }
                   throw $!
