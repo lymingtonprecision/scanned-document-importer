@@ -111,7 +111,6 @@ module IFS
             objs = [obj].flatten
 
             doc = nil
-            err = nil
 
             begin
               begin
