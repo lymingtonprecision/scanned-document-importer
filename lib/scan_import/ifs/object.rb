@@ -80,12 +80,17 @@ module IFS
       def process_new_documents(dry_run=false, base_log)
         doc_count = 0
 
-        log_file = if dry_run
-                     STDOUT
-                   else
-                     IFS::Logger.file_path(scanning_dir)
-                   end
-        log = IFS::Logger.new(log_file, base_log)
+        log_file = IFS::Logger.file_path(scanning_dir) unless dry_run
+
+        log = if log_file && base_log
+                IFS::Logger.new(log_file, base_log)
+              elsif log_file
+                IFS::Logger.new(log_file)
+              elsif base_log
+                base_log
+              else
+                IFS::Logger.new(STDOUT)
+              end
 
         log.info { "checking #{scanning_dir} for files to import"}
 
