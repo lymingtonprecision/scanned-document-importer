@@ -125,7 +125,7 @@ module IFS
               %w{ORIGINAL VIEW}.each do |dt|
                 begin
                   edm_file = IFS::EdmFile.new(
-                    doc, dt, objs[0].to_s, f.type, f.to_blob
+                    doc, dt, "#{objs[0].to_s}.#{f.extension}", f.type, f.to_blob
                   )
                   edm_file.save! unless dry_run
                   log.info { "uploaded scan as #{dt} file of document #{doc.to_s}" }

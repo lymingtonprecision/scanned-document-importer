@@ -7,14 +7,15 @@ module IFS
       "pdf" => "ACROBAT"
     }
 
-    attr_reader :path, :name, :type
+    attr_reader :path, :name, :type, :extension
 
     def initialize(fpath, name=nil)
       @path = fpath
       @name = name || Code3of9.decode(
         File.basename(fpath).gsub(/\.[^.]+$/, '').gsub(/&/, "/")
       )
-      @type = FILE_TYPES[fpath[/\.([^.]+)$/, 1].downcase]
+      @extension = fpath[/\.([^.]+)$/, 1].downcase
+      @type = FILE_TYPES[@extension]
     end
 
     def move_to(dir)
